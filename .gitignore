@@ -30,6 +30,7 @@ Thumbs.db
 # Project specific
 projects/*
 vertex_keys/*
+!vertex_keys/.gitkeep
 
 # Reference repo (keep local, don't commit)
 docs/storycraft/
