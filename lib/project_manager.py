@@ -9,7 +9,6 @@ import logging
 import os
 import re
 import secrets
-import sys
 import unicodedata
 from collections.abc import Callable
 from contextlib import contextmanager
@@ -1079,13 +1078,8 @@ class ProjectManager:
         project_file = self._get_project_file_path(project_name)
         lock_path = project_file.parent / f".{project_file.name}.lock"
         lock_path.touch(exist_ok=True)
-        fd = open(lock_path)
-        try:
-            portalocker.lock(fd, portalocker.LOCK_EX)
+        with portalocker.Lock(lock_path, flags=portalocker.LOCK_EX):
             yield
-        finally:
-            portalocker.unlock(fd)
-            fd.close()
 
     @contextmanager
     def _script_lock(self, project_name: str, script_filename: str):
@@ -1107,13 +1101,8 @@ class ProjectManager:
         lock_path = real.parent / f".{real.name}.lock"
         lock_path.parent.mkdir(parents=True, exist_ok=True)
         lock_path.touch(exist_ok=True)
-        fd = open(lock_path)
-        try:
-            portalocker.lock(fd, portalocker.LOCK_EX)
+        with portalocker.Lock(lock_path, flags=portalocker.LOCK_EX):
             yield
-        finally:
-            portalocker.unlock(fd)
-            fd.close()
 
     def save_project(self, project_name: str, project: dict) -> Path:
         """
